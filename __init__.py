@@ -9,5 +9,6 @@ def register():
     Pool.register(
         AccountJournalInvoiceSequence,
         Journal,
+        FiscalYear,
         Invoice,
         module='account_invoice_sequence', type_='model')

@@ -7,7 +7,7 @@ from trytond.pyson import Eval, If
 from trytond.transaction import Transaction
 
 
-__all__ = ['AccountJournalInvoiceSequence', 'Journal', 'Invoice']
+__all__ = ['AccountJournalInvoiceSequence', 'Journal', 'FiscalYear', 'Invoice']
 __metaclass__ = PoolMeta
 
 
@@ -70,6 +70,20 @@ class Journal:
             if (fiscalyear.start_date < date and
                     fiscalyear.end_date > date):
                 return getattr(sequence, invoice.type + '_sequence')
+
+
+class FiscalYear:
+    __name__ = 'account.fiscalyear'
+    journal_sequences = fields.Function(fields.One2Many('ir.sequence.strict',
+            None, 'Journal Sequences'), 'get_journal_sequences')
+
+    def get_journal_sequences(self, name):
+        pool = Pool()
+        InvoiceSequences = pool.get('account.journal.invoice.sequence')
+        sequences = InvoiceSequences.search([('fiscalyear', '=', self.id)])
+        result = [s.out_invoice_sequence.id for s in sequences]
+        result.extend([s.out_credit_note_sequence.id for s in sequences])
+        return result
 
 
 class Invoice:
