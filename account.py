@@ -81,7 +81,7 @@ class Invoice:
         Sequence = pool.get('ir.sequence.strict')
         Date = pool.get('ir.date')
 
-        if not self.number:
+        if not self.number and self.type in ('out_invoice', 'out_credit_note'):
             sequence = self.journal.get_invoice_sequence(self)
             if sequence:
                 with Transaction().set_context(
