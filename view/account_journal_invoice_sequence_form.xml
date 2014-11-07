@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<!-- This file is part of the account_invoice_sequence module for Tryton.
+The COPYRIGHT file at the top level of this repository contains the full
+copyright notices and license terms. -->
+<form string="Account Invoice Sequence">
+    <label name="company"/>
+    <field name="company"/>
+    <newline/>
+    <label name="fiscalyear"/>
+    <field name="fiscalyear"/>
+    <label name="period"/>
+    <field name="period"/>
+    <label name="out_invoice_sequence"/>
+    <field name="out_invoice_sequence"/>
+    <label name="out_credit_note_sequence"/>
+    <field name="out_credit_note_sequence"/>
+    <label name="journal"/>
+    <field name="journal"/>
+</form>

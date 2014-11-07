@@ -1,0 +1,63 @@
+# 
+msgid ""
+msgstr "Content-Type: text/plain; charset=utf-8\n"
+
+msgctxt "field:account.journal,sequences:"
+msgid "Sequences"
+msgstr "Secuencias"
+
+msgctxt "field:account.journal.invoice.sequence,company:"
+msgid "Company"
+msgstr "Empresa"
+
+msgctxt "field:account.journal.invoice.sequence,create_date:"
+msgid "Create Date"
+msgstr "Fecha de creación"
+
+msgctxt "field:account.journal.invoice.sequence,create_uid:"
+msgid "Create User"
+msgstr "Usuario de creación"
+
+msgctxt "field:account.journal.invoice.sequence,fiscalyear:"
+msgid "Fiscalyear"
+msgstr "Año fiscal"
+
+msgctxt "field:account.journal.invoice.sequence,id:"
+msgid "ID"
+msgstr "Id"
+
+msgctxt "field:account.journal.invoice.sequence,journal:"
+msgid "Journal"
+msgstr "Diario"
+
+msgctxt "field:account.journal.invoice.sequence,out_credit_note_sequence:"
+msgid "Customer Credit Note Sequence"
+msgstr "Secuencia de factura de abono de cliente"
+
+msgctxt "field:account.journal.invoice.sequence,out_invoice_sequence:"
+msgid "Customer Invoice Sequence"
+msgstr "Secuencia de factura de cliente"
+
+msgctxt "field:account.journal.invoice.sequence,period:"
+msgid "Period"
+msgstr "Período"
+
+msgctxt "field:account.journal.invoice.sequence,rec_name:"
+msgid "Name"
+msgstr "Nombre"
+
+msgctxt "field:account.journal.invoice.sequence,write_date:"
+msgid "Write Date"
+msgstr "Fecha modificación"
+
+msgctxt "field:account.journal.invoice.sequence,write_uid:"
+msgid "Write User"
+msgstr "Usuario modificación"
+
+msgctxt "model:account.journal.invoice.sequence,name:"
+msgid "Account Journal Invoice Sequence"
+msgstr "Diario de secuencia de factura"
+
+msgctxt "view:account.journal.invoice.sequence:"
+msgid "Account Invoice Sequence"
+msgstr "Secuencia de factura"
