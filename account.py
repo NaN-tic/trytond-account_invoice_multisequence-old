@@ -48,6 +48,14 @@ class AccountJournalInvoiceSequence(ModelSQL, ModelView):
             'company': Eval('company'),
             }, depends=['company'])
 
+    @classmethod
+    def __setup__(cls):
+        super(AccountJournalInvoiceSequence, cls).__setup__()
+        cls._sql_constraints += [
+            ('period_uniq', 'UNIQUE(period)',
+                'Period can be used only once for Journal Sequence.'),
+        ]
+
 
 class Journal:
     __name__ = 'account.journal'
