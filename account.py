@@ -52,8 +52,8 @@ class AccountJournalInvoiceSequence(ModelSQL, ModelView):
     def __setup__(cls):
         super(AccountJournalInvoiceSequence, cls).__setup__()
         cls._sql_constraints += [
-            ('period_uniq', 'UNIQUE(period)',
-                'Period can be used only once for Journal Sequence.'),
+            ('period_uniq', 'UNIQUE(journal, period)',
+                'Period can be used only once per Journal Sequence.'),
         ]
 
 
