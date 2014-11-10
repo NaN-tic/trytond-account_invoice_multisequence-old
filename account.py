@@ -29,22 +29,28 @@ class AccountJournalInvoiceSequence(ModelSQL, ModelView):
     out_invoice_sequence = fields.Many2One('ir.sequence.strict',
         'Customer Invoice Sequence', required=True,
         domain=[
+            ('code', '=', 'account.invoice'),
             ['OR',
                 ('company', '=', Eval('company')),
                 ('company', '=', None),
-            ]],
+                ]
+            ],
         context={
+            'code': 'account.invoice',
             'company': Eval('company'),
             },
         depends=['company'])
     out_credit_note_sequence = fields.Many2One('ir.sequence.strict',
         'Customer Credit Note Sequence', required=True,
         domain=[
+            ('code', '=', 'account.invoice'),
             ['OR',
                 ('company', '=', Eval('company')),
                 ('company', '=', None),
-            ]],
+                ]
+            ],
         context={
+            'code': 'account.invoice',
             'company': Eval('company'),
             }, depends=['company'])
 
