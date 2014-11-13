@@ -3,7 +3,7 @@
 # copyright notices and license terms.
 from trytond.model import ModelView, ModelSQL, fields
 from trytond.pool import Pool, PoolMeta
-from trytond.pyson import Equal, Eval, If, In, Not
+from trytond.pyson import Eval, If, In, Not
 from trytond.transaction import Transaction
 
 
