@@ -1,7 +1,7 @@
-trytond_account_invoice_sequence
-================================
+trytond_account_invoice_multisequence
+=====================================
 
-The account_invoice_sequence module of the Tryton application platform.
+The account_invoice_multisequence module of the Tryton application platform.
 
 Installing
 ----------

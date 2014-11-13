@@ -1,5 +1,5 @@
-Installing trytond_account_invoice_sequence
-===========================================
+Installing trytond_account_invoice_multisequence
+================================================
 
 Prerequisites
 -------------
@@ -10,7 +10,7 @@ Prerequisites
 Installation
 ------------
 
-Once you've downloaded and unpacked the trytond_account_invoice_sequence
+Once you've downloaded and unpacked the trytond_account_invoice_multisequence
 source release, enter the directory where the archive was unpacked, and run:
 
     python setup.py install
@@ -26,4 +26,4 @@ documentation:
   http://docs.python.org/inst/inst.html
 
 To use without installation, extract the archive into ``trytond/modules`` with
-the directory name account_invoice_sequence.
+the directory name account_invoice_multisequence.
