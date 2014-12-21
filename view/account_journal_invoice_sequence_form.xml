@@ -8,16 +8,12 @@ copyright notices and license terms. -->
     <newline/>
     <label name="fiscalyear"/>
     <field name="fiscalyear"/>
-    <label name="period"/>
-    <field name="period"/>
+    <newline/>
+    <label name="journal"/>
+    <field name="journal"/>
+    <newline/>
     <label name="out_invoice_sequence"/>
     <field name="out_invoice_sequence"/>
     <label name="out_credit_note_sequence"/>
     <field name="out_credit_note_sequence"/>
-    <label name="in_invoice_sequence"/>
-    <field name="in_invoice_sequence"/>
-    <label name="in_credit_note_sequence"/>
-    <field name="in_credit_note_sequence"/>
-    <label name="journal"/>
-    <field name="journal"/>
 </form>

@@ -14,82 +14,57 @@ __metaclass__ = PoolMeta
 class AccountJournalInvoiceSequence(ModelSQL, ModelView):
     'Account Journal Invoice Sequence'
     __name__ = 'account.journal.invoice.sequence'
-    journal = fields.Many2One('account.journal', 'Journal', required=True)
-    fiscalyear = fields.Many2One('account.fiscalyear', 'Fiscalyear',
-        required=True)
-    period = fields.Many2One('account.period', 'Period',
+    journal = fields.Many2One('account.journal', 'Journal', required=True,
         domain=[
-            ('fiscalyear', '=', Eval('fiscalyear'))
-            ], depends=['fiscalyear'])
+            ('type', '=', 'revenue'),
+            ], depends=['company'])
+    fiscalyear = fields.Many2One('account.fiscalyear', 'Fiscalyear',
+        required=True, domain=[
+            ('company', '=', Eval('company', -1)),
+            ], depends=['company'])
     company = fields.Many2One('company.company', 'Company', required=True,
         domain=[
             ('id', If(Eval('context', {}).contains('company'), '=', '!='),
                 Eval('context', {}).get('company', -1)),
             ], select=True)
-    type = fields.Function(fields.Char('Type'), 'get_type')
     out_invoice_sequence = fields.Many2One('ir.sequence.strict',
-        'Customer Invoice Sequence',
-        states={
-            'required': Eval('type') == 'revenue',
-            'invisible': Eval('type') != 'revenue',
-            },
+        'Customer Invoice Sequence', required=True,
         domain=[
             ['OR',
                 ('company', '=', Eval('company')),
                 ('company', '=', None),
                 ]
             ],
-        depends=['company', 'type'])
+        context={
+            'code': 'account.invoice',
+            'company': Eval('company'),
+            },
+        depends=['company'])
     out_credit_note_sequence = fields.Many2One('ir.sequence.strict',
-        'Customer Credit Note Sequence',
-        states={
-            'required': Eval('type') == 'revenue',
-            'invisible': Eval('type') != 'revenue',
-            },
+        'Customer Credit Note Sequence', required=True,
         domain=[
             ['OR',
                 ('company', '=', Eval('company')),
                 ('company', '=', None),
                 ]
             ],
-        depends=['company', 'type'])
-    in_invoice_sequence = fields.Many2One('ir.sequence.strict',
-        'Supplier Invoice Sequence',
-        states={
-            'required': Eval('type') == 'expense',
-            'invisible': Eval('type') != 'expense',
+        context={
+            'code': 'account.invoice',
+            'company': Eval('company'),
             },
-        domain=[
-            ['OR',
-                ('company', '=', Eval('company')),
-                ('company', '=', None),
-                ]
-            ],
-        depends=['company', 'type'])
-    in_credit_note_sequence = fields.Many2One('ir.sequence.strict',
-        'Supplier Credit Note Sequence',
-        states={
-            'required': Eval('type') == 'expense',
-            'invisible': Eval('type') != 'expense',
-            },
-        domain=[
-            ['OR',
-                ('company', '=', Eval('company')),
-                ('company', '=', None),
-                ]
-            ],
-        depends=['company', 'type'])
+        depends=['company'])
 
     @classmethod
     def __setup__(cls):
         super(AccountJournalInvoiceSequence, cls).__setup__()
         cls._sql_constraints += [
-            ('period_uniq', 'UNIQUE(journal, period)',
-                'Period can be used only once per Journal Sequence.'),
-        ]
+            ('journal_fiscalyear_uniq', 'UNIQUE(journal, fiscalyear)',
+                'Fiscal Year - Journal pair must be unique.'),
+            ]
 
-    def get_type(self, name):
-        return self.journal.type
+    @staticmethod
+    def default_company():
+        return Transaction().context.get('company')
 
     @fields.depends('journal')
     def on_change_journal(self):
@@ -102,18 +77,13 @@ class Journal:
     __name__ = 'account.journal'
     sequences = fields.One2Many('account.journal.invoice.sequence', 'journal',
         'Sequences', states={
-            'invisible': Not(In(Eval('type'), ['revenue', 'expense'])),
+            'invisible': Eval('type') == 'revenue',
             })
 
     def get_invoice_sequence(self, invoice):
         pool = Pool()
         Date = pool.get('ir.date')
         date = invoice.invoice_date or Date.today()
-        for sequence in self.sequences:
-            period = sequence.period
-            if period and (period.start_date < date and
-                    period.end_date > date):
-                return getattr(sequence, invoice.type + '_sequence')
         for sequence in self.sequences:
             fiscalyear = sequence.fiscalyear
             if (fiscalyear.start_date < date and
@@ -123,16 +93,8 @@ class Journal:
 
 class FiscalYear:
     __name__ = 'account.fiscalyear'
-    journal_sequences = fields.Function(fields.One2Many('ir.sequence.strict',
-            None, 'Journal Sequences'), 'get_journal_sequences')
-
-    def get_journal_sequences(self, name):
-        pool = Pool()
-        InvoiceSequences = pool.get('account.journal.invoice.sequence')
-        sequences = InvoiceSequences.search([('fiscalyear', '=', self.id)])
-        result = [s.out_invoice_sequence.id for s in sequences]
-        result.extend([s.out_credit_note_sequence.id for s in sequences])
-        return result
+    journal_sequences = fields.One2Many('account.journal.invoice.sequence',
+        'fiscalyear', 'Journal Sequences')
 
 
 class Invoice:
@@ -147,10 +109,13 @@ class Invoice:
         Sequence = pool.get('ir.sequence.strict')
         Date = pool.get('ir.date')
 
-        sequence = self.journal.get_invoice_sequence(self)
-        if sequence:
-            with Transaction().set_context(
-                    date=self.invoice_date or Date.today()):
-                self.number = Sequence.get_id(sequence.id)
-                self.save()
+        if self.type.startswith('out_'):
+            sequence = self.journal.get_invoice_sequence(self)
+            if sequence:
+                with Transaction().set_context(
+                        date=self.invoice_date or Date.today()):
+                    self.number = Sequence.get_id(sequence.id)
+                    if not self.invoice_date:
+                        self.invoice_date = Transaction().context['date']
+                    self.save()
         return super(Invoice, self).set_number()
