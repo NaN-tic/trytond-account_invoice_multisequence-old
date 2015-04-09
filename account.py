@@ -105,9 +105,11 @@ class Invoice:
         Set number to the invoice
         '''
         pool = Pool()
-        Journal = pool.get('account.journal')
         Sequence = pool.get('ir.sequence.strict')
         Date = pool.get('ir.date')
+
+        if self.number:
+            return super(Invoice, self).set_number()
 
         if self.type.startswith('out_'):
             sequence = self.journal.get_invoice_sequence(self)
