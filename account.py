@@ -68,9 +68,8 @@ class AccountJournalInvoiceSequence(ModelSQL, ModelView):
 
     @fields.depends('journal')
     def on_change_journal(self):
-        return {
-            'type': self.journal.type,
-            }
+        if self.journal and self.journal.type:
+            self.type = self.journal.type
 
 
 class Journal:
