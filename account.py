@@ -111,7 +111,7 @@ class Invoice:
         if self.number:
             return super(Invoice, self).set_number()
 
-        if self.type.startswith('out_'):
+        if self.type == 'out':
             sequence = self.journal.get_invoice_sequence(self)
             if sequence:
                 with Transaction().set_context(
