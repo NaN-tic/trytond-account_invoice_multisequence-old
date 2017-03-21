@@ -1,0 +1,1 @@
+* 2017/03/21: Fixed an issue in which the first and the last day of the year would get a different sequence number
