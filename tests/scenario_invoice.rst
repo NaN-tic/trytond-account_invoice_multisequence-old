@@ -71,16 +71,30 @@ Create new Journal with custom sequences::
     ...     code='account.invoice',
     ...     company=company)
     >>> invoice_seq.save()
+    >>> invoice_credit_seq = SequenceStrict(name=fiscalyear.name,
+    ...     code='account.invoice',
+    ...     prefix='C',
+    ...     company=company)
+    >>> invoice_credit_seq.save()
     >>> journal_revenue, = Journal.find([('type', '=', 'revenue')])
-    >>> journal_custom = Journal(type='revenue', name='Custom Revenue')
-    >>> journal_custom.sequence = sequence_journal
-    >>> sequences = journal_custom.sequences.new()
+    >>> journal_revenue_custom = Journal(type='revenue',
+    ...     name='Custom Revenue',
+    ...     sequence=sequence_journal)
+    >>> sequences = journal_revenue_custom.sequences.new()
     >>> sequences.fiscalyear = fiscalyear
     >>> sequences.out_invoice_sequence = invoice_seq
+    >>> sequences.out_credit_note_sequence = invoice_credit_seq
+    >>> journal_revenue_custom.save()
+
+    >>> journal_expense, = Journal.find([('type', '=', 'expense')])
+    >>> journal_expense_custom = Journal(type='expense',
+    ...     name='Custom Expense',
+    ...     sequence=sequence_journal)
+    >>> sequences = journal_expense_custom.sequences.new()
+    >>> sequences.fiscalyear = fiscalyear
     >>> sequences.in_invoice_sequence = invoice_seq
-    >>> sequences.out_credit_note_sequence = invoice_seq
-    >>> sequences.in_credit_note_sequence = invoice_seq
-    >>> journal_custom.save()
+    >>> sequences.in_credit_note_sequence = invoice_credit_seq
+    >>> journal_expense_custom.save()
 
 Create party::
 
@@ -148,7 +162,8 @@ Create invoice on custom journal::
     >>> Invoice = Model.get('account.invoice')
     >>> invoice = Invoice()
     >>> invoice.party = party
-    >>> invoice.journal = journal_custom
+    >>> invoice.invoice_date = today
+    >>> invoice.journal = journal_revenue_custom
     >>> invoice.payment_term = payment_term
     >>> line = invoice.lines.new()
     >>> line.product = product
@@ -163,7 +178,8 @@ Create credit_note on custom journal::
     >>> Invoice = Model.get('account.invoice')
     >>> invoice = Invoice()
     >>> invoice.party = party
-    >>> invoice.journal = journal_custom
+    >>> invoice.invoice_date = today
+    >>> invoice.journal = journal_revenue_custom
     >>> invoice.payment_term = payment_term
     >>> line = invoice.lines.new()
     >>> line.product = product
@@ -171,4 +187,38 @@ Create credit_note on custom journal::
     >>> line.unit_price = Decimal('40')
     >>> invoice.click('post')
     >>> invoice.number
+    u'C1'
+
+Create invoice IN on custom journal::
+
+    >>> Invoice = Model.get('account.invoice')
+    >>> invoice = Invoice()
+    >>> invoice.type = 'in'
+    >>> invoice.party = party
+    >>> invoice.invoice_date = today
+    >>> invoice.journal = journal_expense_custom
+    >>> invoice.payment_term = payment_term
+    >>> line = invoice.lines.new()
+    >>> line.product = product
+    >>> line.quantity = 5
+    >>> line.unit_price = Decimal('40')
+    >>> invoice.click('post')
+    >>> invoice.number
     u'2'
+
+Create credit_note IN on custom journal::
+
+    >>> Invoice = Model.get('account.invoice')
+    >>> invoice = Invoice()
+    >>> invoice.type = 'in'
+    >>> invoice.party = party
+    >>> invoice.invoice_date = today
+    >>> invoice.journal = journal_expense_custom
+    >>> invoice.payment_term = payment_term
+    >>> line = invoice.lines.new()
+    >>> line.product = product
+    >>> line.quantity = -5
+    >>> line.unit_price = Decimal('40')
+    >>> invoice.click('post')
+    >>> invoice.number
+    u'C2'
