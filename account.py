@@ -117,9 +117,15 @@ class Journal:
     def get_invoice_sequence(self, invoice):
         pool = Pool()
         Date = pool.get('ir.date')
+        JournalSequence = pool.get('account.journal.invoice.sequence')
         date = invoice.invoice_date or Date.today()
+        company_id = Transaction().context.get('company')
 
-        for sequence in self.sequences:
+        sequences = JournalSequence.search([
+                ('journal', '=', self.id),
+                ('company', '=', company_id),
+                ])
+        for sequence in sequences:
             period = sequence.period
             if period and (period.start_date <= date and
                     period.end_date >= date):
@@ -129,7 +135,7 @@ class Journal:
                 else:
                     return getattr(
                         sequence, invoice.type + '_credit_note_sequence')
-        for sequence in self.sequences:
+        for sequence in sequences:
             fiscalyear = sequence.fiscalyear
             if (fiscalyear.start_date <= date and
                     fiscalyear.end_date >= date):
